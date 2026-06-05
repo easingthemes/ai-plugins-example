@@ -1,0 +1,12 @@
+{
+  "name": "my-first-plugin",
+  "description": "A minimal example plugin that ships a single skill.",
+  "version": "1.0.0",
+  "author": {
+    "name": "easingthemes"
+  },
+  "homepage": "https://github.com/easingthemes/ai-plugins-example",
+  "repository": "https://github.com/easingthemes/ai-plugins-example",
+  "license": "MIT",
+  "keywords": ["claude-code", "claude-plugin", "agent-skills", "example"]
+}

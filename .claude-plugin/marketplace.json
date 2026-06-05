@@ -1,0 +1,21 @@
+{
+  "name": "my-marketplace",
+  "description": "An example Claude Code plugin marketplace with a single demo plugin.",
+  "owner": {
+    "name": "easingthemes"
+  },
+  "homepage": "https://github.com/easingthemes/ai-plugins-example",
+  "repository": "https://github.com/easingthemes/ai-plugins-example",
+  "license": "MIT",
+  "keywords": ["claude-code", "claude-plugin", "agent-skills", "example", "skill-marketplace"],
+  "platforms": ["claude-code", "copilot-cli"],
+  "plugins": [
+    {
+      "name": "my-first-plugin",
+      "source": "./plugins/my-first-plugin",
+      "description": "A minimal example plugin that ships a single skill.",
+      "version": "1.0.0",
+      "author": { "name": "easingthemes" }
+    }
+  ]
+}
