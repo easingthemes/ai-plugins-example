@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "my-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "easingthemes/ai-plugins-example"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "my-first-plugin@my-marketplace": true
+  }
+}

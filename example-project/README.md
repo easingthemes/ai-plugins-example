@@ -1,18 +1,18 @@
 # example-project
 
-A sample consumer project that uses **my-marketplace** and installs **my-first-plugin** (which ships `/my-skill`).
+A sample consumer project that uses **my-marketplace** and enables **my-first-plugin** (which ships `/my-skill`) — scoped to *this project only*.
 
-It shows the marketplace settings for both **Claude Code** and **GitHub Copilot CLI**.
+Both Claude Code and GitHub Copilot CLI use the **same declarative keys** (`extraKnownMarketplaces` + `enabledPlugins`); only the file location differs.
 
 ```
 example-project/
-├── .claude/settings.json     # Claude Code — declarative marketplace + plugin enablement
-└── .copilot/config.json      # Copilot CLI — installed-plugins format (reference)
+├── .claude/settings.json            # Claude Code  — project-level marketplace + plugin
+└── .github/copilot/settings.json    # Copilot CLI  — project-level marketplace + plugin
 ```
 
-## Claude Code (declarative)
+## Enable a plugin only in this project
 
-`.claude/settings.json` is read automatically when you open the project. It both **registers** the marketplace and **enables** the plugin — no manual commands needed.
+### Claude Code — `.claude/settings.json`
 
 ```jsonc
 {
@@ -28,37 +28,44 @@ example-project/
 }
 ```
 
-Open the folder in Claude Code and run `/my-skill`. To do it manually instead:
-
-```bash
-/plugin marketplace add easingthemes/ai-plugins-example
-/plugin install my-first-plugin@my-marketplace
-```
-
-## GitHub Copilot CLI (command-driven)
-
-Copilot CLI installs plugins via a command and records them in the **user-global** `~/.copilot/config.json` (auto-managed). There is no committed per-project marketplace file — `.copilot/config.json` here is included only to show the resulting format.
-
-```bash
-# Marketplace + plugin in one step (owner/repo/plugin)
-/plugin install easingthemes/ai-plugins-example/my-first-plugin
-```
-
-After install, `~/.copilot/config.json` contains an `installedPlugins` entry like:
+### Copilot CLI — `.github/copilot/settings.json`
 
 ```jsonc
 {
-  "installedPlugins": [
-    { "name": "my-first-plugin", "marketplace": "my-marketplace", "version": "1.0.0", "enabled": true }
-  ]
+  "extraKnownMarketplaces": {
+    "my-marketplace": {
+      "source": { "source": "github", "repo": "easingthemes/ai-plugins-example" }
+    }
+  },
+  "enabledPlugins": {
+    "my-first-plugin@my-marketplace": true
+  }
 }
 ```
 
-Then run the skill the same way: `/my-skill`.
+Open the project in either tool and run `/my-skill`.
 
-## Summary
+## Copilot CLI settings precedence
 
-| Platform | File | Mechanism |
-|----------|------|-----------|
-| Claude Code | `.claude/settings.json` (project) | Declarative — `extraKnownMarketplaces` + `enabledPlugins` |
-| Copilot CLI | `~/.copilot/config.json` (user-global, auto-managed) | Command-driven — `/plugin install owner/repo/plugin` |
+Settings cascade lowest → highest; a repo-level key overrides the user-level value for the same key:
+
+| Scope | File | Committed? |
+|-------|------|-----------|
+| User-global | `~/.copilot/settings.json` | no (your machine) |
+| **Project (shared)** | `.github/copilot/settings.json` | **yes** |
+| Project (personal) | `.github/copilot/settings.local.json` | no — add to `.gitignore` |
+| Per-invocation | CLI flags (`--allow-tool`, …) | n/a |
+
+> Note: `~/.copilot/config.json` is a *separate, auto-managed* file (trusted dirs, installed-plugin cache). Don't hand-edit it — put your declarative config in `settings.json`.
+> Caveat: as of mid-2026 some Copilot CLI versions don't *auto-install* a plugin from `enabledPlugins` if it isn't downloaded yet (github/copilot-cli#2249). If `/my-skill` doesn't appear, run `/plugin install easingthemes/ai-plugins-example/my-first-plugin` once; `enabledPlugins` then controls on/off per project.
+
+## Manual install (either tool)
+
+```bash
+# Claude Code
+/plugin marketplace add easingthemes/ai-plugins-example
+/plugin install my-first-plugin@my-marketplace
+
+# Copilot CLI (marketplace + plugin in one step)
+/plugin install easingthemes/ai-plugins-example/my-first-plugin
+```
